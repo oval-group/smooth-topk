@@ -1,0 +1,7 @@
+tqdm
+torch==0.3.0
+future
+scipy
+numpy
+git+git://github.com/oval-group/logger#egg=v0.3
+torchvision==0.2.0
