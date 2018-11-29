@@ -1,6 +1,6 @@
 # Smooth Loss Functions for Deep Top-k Classification
 
-This repository contains the implementation of the paper [Smooth Loss Functions for Deep Top-k Classification](https://openreview.net/forum?id=Hk5elxbRW&noteId=Hk5elxbRW) in pytorch. If you use this work for your research, please cite the paper:
+This repository contains the implementation of the paper [Smooth Loss Functions for Deep Top-k Classification](https://arxiv.org/abs/1802.07595) in pytorch. If you use this work for your research, please cite the paper:
 
 ```
 @Article{berrada2018smooth,
