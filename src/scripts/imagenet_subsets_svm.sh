@@ -2,7 +2,7 @@
 
 lr_0=1
 tau=0.1
-mu=0.00025
+mu=0.000025
 
 python main.py --dataset imagenet --loss svm --out-name ../xp/imagenet/im64k_svm \
     --parallel-gpu --train-size 64000 --lr_0 $lr_0 --tau $tau --mu $mu --no-visdom;
