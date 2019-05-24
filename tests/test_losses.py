@@ -3,10 +3,10 @@ import unittest
 import numpy as np
 
 from torch.autograd import Variable
-from losses.svm import SmoothTop1SVM, SmoothTopkSVM, MaxTop1SVM, MaxTopkSVM
-from losses.functional import Topk_Smooth_SVM
-from tests.utils import assert_all_close, V
-from tests.py_ref import svm_topk_smooth_py_1, svm_topk_smooth_py_2,\
+from topk.svm import SmoothTop1SVM, SmoothTopkSVM, MaxTop1SVM, MaxTopkSVM
+from topk.functional import Topk_Smooth_SVM
+from utils import assert_all_close, V
+from py_ref import svm_topk_smooth_py_1, svm_topk_smooth_py_2,\
     smooth_svm_py, max_svm_py, svm_topk_max_py
 
 from torch.autograd.gradcheck import gradcheck

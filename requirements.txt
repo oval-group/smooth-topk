@@ -1,5 +1,5 @@
 tqdm
-torch==0.3.0
+torch>=1.0
 future
 scipy
 numpy

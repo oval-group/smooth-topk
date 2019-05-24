@@ -3,10 +3,10 @@ import torch
 import unittest
 import numpy as np
 
-from losses.polynomial import LogSumExp
-from tests.utils import assert_all_close, V
-from tests.py_ref import sum_product_py
-from tests.th_ref import log_sum_exp_k
+from topk.polynomial import LogSumExp
+from utils import assert_all_close, V
+from py_ref import sum_product_py
+from th_ref import log_sum_exp_k
 from torch.autograd import Variable, gradcheck
 
 

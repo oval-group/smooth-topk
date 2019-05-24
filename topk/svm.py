@@ -1,16 +1,9 @@
 import torch
 import torch.nn as nn
 import numpy as np
-import losses.functional as F
+import topk.functional as F
 
-from losses.utils import detect_large
-
-
-def SmoothSVM(n_classes, alpha=None, tau=1., k=5):
-    if k == 1:
-        return SmoothTop1SVM(n_classes, alpha, tau)
-    else:
-        return SmoothTopkSVM(n_classes, alpha, tau, k)
+from topk.utils import detect_large
 
 
 class _SVMLoss(nn.Module):
@@ -46,10 +39,12 @@ class _SVMLoss(nn.Module):
     def cuda(self, device=None):
         nn.Module.cuda(self, device)
         self.get_losses()
+        return self
 
     def cpu(self):
         nn.Module.cpu()
         self.get_losses()
+        return self
 
 
 class MaxTop1SVM(_SVMLoss):

@@ -3,9 +3,9 @@ import torch
 import unittest
 import numpy as np
 
-from losses.logarithm import LogTensor, log1mexp
-from tests.utils import assert_all_close, V
-from tests.py_ref import log1mexp_py
+from topk.logarithm import LogTensor, log1mexp
+from utils import assert_all_close, V
+from py_ref import log1mexp_py
 
 
 class TestLogTensor(unittest.TestCase):

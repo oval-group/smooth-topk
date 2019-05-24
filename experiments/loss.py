@@ -1,11 +1,16 @@
 import torch.nn as nn
-from losses.svm import SmoothSVM
+from topk.svm import SmoothTop1SVM, SmoothTopkSVM
 
 
 def get_loss(xp, args):
     if args.loss == "svm":
         print("Using SVM loss")
-        loss = SmoothSVM(n_classes=args.num_classes, k=args.topk, tau=args.tau, alpha=args.alpha)
+        if args.topk == 1:
+            loss = SmoothTop1SVM(n_classes=args.num_classes, alpha=args.alpha,
+                                 tau=args.tau)
+        else:
+            loss = SmoothTopkSVM(n_classes=args.num_classes, alpha=args.alpha,
+                                 tau=args.tau, k=args.topk)
     elif args.loss == 'ce':
         print("Using CE loss")
         loss = nn.CrossEntropyLoss()

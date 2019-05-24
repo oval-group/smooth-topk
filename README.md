@@ -11,11 +11,18 @@ This repository contains the implementation of the paper [Smooth Loss Functions 
 }
 ```
 
-The core algorithm to compute the smooth top-k loss function with the elementary symmetric polynomials is contained in the `losses` module. Algorithms for the elementary symmetric polynomials and their gradients are in `losses/polynomial`.
+## The `topk` Package
+
+The implementation of the loss functions is self-contained and available through the package `topk`.
+The package can be installed through a standard `python setup.py install`.
+Then the loss function can be imported into an existing codebase through `from topk.svm import SmoothTop1SVM, SmoothTopkSVM`.
+See [`topk/svm.py`](topk/svm.py) for the arguments of the loss functions.
+
+Implementation details of the algorithms to compute the elementary symmetric polynomials and their gradients are in [`topk/polynomial`](topk/polynomial).
 
 ## Requirements
 
-This code has been tested for pytorch 0.3.0. Detailed requirements are available in `requirements.txt`. The code should be compatible with python 2 and 3 (developed in 2.7).
+This code should be useable with Pytorch 1.0. Detailed requirements to reproduce the experiments are available in `requirements.txt`. The code should be compatible with python 2 and 3 (developed in 2.7).
 
 ## Reproducing the results
 

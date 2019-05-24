@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.autograd as ag
 
-from losses.polynomial.divide_conquer import divide_and_conquer
-from losses.polynomial.multiplication import Multiplication
-from losses.polynomial.grad import d_logS_d_expX
+from topk.polynomial.divide_conquer import divide_and_conquer
+from topk.polynomial.multiplication import Multiplication
+from topk.polynomial.grad import d_logS_d_expX
 
 
 class LogSumExp(nn.Module):
@@ -105,3 +105,33 @@ def log_sum_exp(x):
     """
     max_score, _ = x.max(1)
     return max_score + torch.log(torch.sum(torch.exp(x - max_score[:, None]), 1))
+
+
+def log_sum_exp_k_autograd(x, k):
+    # number of samples and number of coefficients to compute
+    n_s = x.size(0)
+
+    assert k <= x.size(1)
+
+    # clone to allow in-place operations
+    x = x.clone()
+
+    # pre-compute normalization
+    x_summed = x.sum(1)
+
+    # invert in log-space
+    x.t_().mul_(-1)
+
+    # initialize polynomials (in log-space)
+    x = [x, x.clone().fill_(0)]
+
+    # polynomial mulitplications
+    log_res = divide_and_conquer(x, k, mul=Multiplication(k))
+
+    # re-normalize
+    coeff = log_res + x_summed[None, :]
+
+    # avoid broadcasting issues (in particular if n_s = 1)
+    coeff = coeff.view(k + 1, n_s)
+
+    return coeff[k - 1: k + 1]

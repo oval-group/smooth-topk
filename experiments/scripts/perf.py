@@ -5,13 +5,8 @@ import itertools
 import time
 
 from torch.autograd import Variable
-
-import sys
-sys.path.insert(1, '.')
-
-from losses.polynomial.sp import LogSumExp
-from losses.utils import split
-from tests.th_ref import log_sum_exp_k
+from topk.polynomial.sp import LogSumExp, log_sum_exp_k_autograd
+from topk.utils import split
 
 
 def sum_k_pyref(x, k):
@@ -138,7 +133,7 @@ def speed(verbosity=1, forward=1):
     print('-' * 90)
 
     if not forward:
-        clock, ntimes = timing_fun(log_sum_exp_k, x_1, k, verbosity,
+        clock, ntimes = timing_fun(log_sum_exp_k_autograd, x_1, k, verbosity,
                                    double=False, forward=forward)
         print("Divide-and-conquer AD: \t{0:.3f}s / mini-batch \t (avg of {1} runs)".format(clock, ntimes))
 

@@ -10,7 +10,7 @@ from utils import create_experiment, get_optimizer, set_seed,\
 from data.main import get_loaders
 from epoch import train, test
 
-from losses.main import get_loss
+from loss import get_loss
 from models.main import get_model, load_model
 
 
@@ -40,7 +40,6 @@ def run(args):
     with logger.stdout_to("{}_log.txt".format(args.out_name)):
         clock = -time.time()
         for _ in range(args.epochs):
-
             xp.Epoch.update(1).log()
             optimizer = update_optimizer(args.lr_schedule, optimizer,
                                          model, loss, xp)

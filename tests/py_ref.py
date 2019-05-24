@@ -2,7 +2,7 @@ import numpy as np
 import scipy.misc as sp
 import itertools
 
-from tests.utils import to_numpy
+from utils import to_numpy
 
 
 def log1mexp_py(x):

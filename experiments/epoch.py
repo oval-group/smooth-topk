@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.autograd as ag
 
@@ -10,8 +11,6 @@ def data_to_var(data, target, cuda, volatile=False):
     if cuda:
         data = data.cuda()
         target = target.cuda()
-    data = ag.Variable(data, volatile=volatile)
-    target = ag.Variable(target)
 
     return data, target
 
@@ -38,11 +37,11 @@ def train(model, loss, optimizer, loader, xp, args):
 
         prec1 = accuracy(output.data, target.data, topk=1)
         preck = accuracy(output.data, target.data, topk=xp.config['topk'])
-        xp.Parent_Train.update(loss=obj.data[0], acck=preck, acc1=prec1, n=data.size(0))
+        xp.Parent_Train.update(loss=float(obj), acck=float(preck), acc1=float(prec1), n=data.size(0))
 
     # compute objective function (including regularization)
     obj = xp.Loss_Train.get() + regularization(model, xp.mu)
-    xp.Obj_Train.update(obj)
+    xp.Obj_Train.update(float(obj))
     # measure elapsed time
     xp.Timer_Train.update()
 
@@ -74,8 +73,8 @@ def test(model, loss, loader, xp, args):
     xp.log_with_tag(loader.tag)
 
     if loader.tag == 'val':
-        xp.Acc1_Val_Best.update(xp.acc1_val).log()
-        xp.Acck_Val_Best.update(xp.acck_val).log()
+        xp.Acc1_Val_Best.update(float(xp.acc1_val)).log()
+        xp.Acck_Val_Best.update(float(xp.acck_val)).log()
 
     if args.verbosity:
         print_stats(xp, loader.tag)
@@ -84,28 +83,27 @@ def test(model, loss, loader, xp, args):
         dump_results(xp, args)
 
 
+@torch.no_grad()
 def epoch_test(model, loader, xp, cuda):
     metrics = xp.get_metric(tag=loader.tag, name='parent')
     for batch_idx, (data, target) in tqdm(enumerate(loader), desc='Test Epoch',
                                           leave=False, total=len(loader)):
-        data, target = data_to_var(data, target, cuda, volatile=True)
+        data, target = data_to_var(data, target, cuda)
         output = model(data)
 
         prec1 = accuracy(output.data, target.data, topk=1)
         preck = accuracy(output.data, target.data, topk=xp.config['topk'])
-        metrics.update(acck=preck, acc1=prec1, n=data.size(0))
+        metrics.update(acck=float(preck), acc1=float(prec1), n=data.size(0))
 
-
+@torch.no_grad()
 def epoch_test_multiple_crops(model, loader, xp, cuda):
     metrics = xp.get_metric(tag=loader.tag, name='parent')
     xp.Temperature.update()
     for batch_idx, (data, target) in tqdm(enumerate(loader), desc='Test Epoch',
                                           leave=False, total=len(loader)):
-
-        target = ag.Variable(target.cuda())
         avg = 0
         for img in data:
-            img = ag.Variable(img.cuda(), volatile=True)
+            img, target = data_to_var(img, target, cuda)
             output = model(img)
             # cross-entropy
             if xp.temperature == -1:
@@ -117,4 +115,4 @@ def epoch_test_multiple_crops(model, loader, xp, cuda):
 
         prec1 = accuracy(avg, target.data, topk=1)
         preck = accuracy(avg, target.data, topk=xp.config['topk'])
-        metrics.update(acck=preck, acc1=prec1, n=target.size(0))
+        metrics.update(acck=float(preck), acc1=float(prec1), n=target.size(0))

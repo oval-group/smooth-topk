@@ -4,7 +4,7 @@ import torch.utils.data as data
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
-from utils import LabelNoise, split_dataset
+from .utils import LabelNoise, split_dataset
 
 
 def get_loaders(args):
