@@ -6,7 +6,7 @@ import numpy as np
 from topk.polynomial import LogSumExp
 from utils import assert_all_close, V
 from py_ref import sum_product_py
-from th_ref import log_sum_exp_k
+from topk.polynomial.sp import log_sum_exp_k_autograd
 from torch.autograd import Variable, gradcheck
 
 
@@ -63,7 +63,7 @@ class TestSumProduct(unittest.TestCase):
             X_auto = Variable(x.double(), requires_grad=True)
             X_man = Variable(x, requires_grad=True)
 
-            res1_auto, res2_auto = log_sum_exp_k(X_auto, self.k)
+            res1_auto, res2_auto = log_sum_exp_k_autograd(X_auto, self.k)
             res1_auto, res2_auto = res1_auto.squeeze(), res2_auto.squeeze()
 
             res_man = LogSumExp(self.k)(X_man).squeeze()

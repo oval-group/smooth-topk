@@ -99,18 +99,15 @@ class TestSmoothSVMTopk(unittest.TestCase):
         assert_all_close(res_th, res_py)
 
     def testSmoothSVMth_loss(self):
+        for k in range(2, self.k + 1):
+            svm_topk_smooth_th = SmoothTopkSVM(self.n_classes, tau=self.tau, k=k)
+            res_th = svm_topk_smooth_th(V(self.x), V(self.y))
+            res_py = svm_topk_smooth_py_1(V(self.x), V(self.y),
+                                          self.tau, k).mean()
 
-        svm_topk_smooth_th = SmoothTopkSVM(self.n_classes, tau=self.tau,
-                                           k=self.k)
-        res_th = svm_topk_smooth_th(V(self.x), V(self.y))
-        res_py = svm_topk_smooth_py_1(V(self.x),
-                                      V(self.y),
-                                      self.tau, self.k).mean()
-
-        assert_all_close(res_th, res_py)
+            assert_all_close(res_th, res_py)
 
     def testSmoothSVMth_loss_scales(self):
-
         svm_topk_smooth_th = SmoothTopkSVM(self.n_classes, tau=self.tau, k=self.k)
         for scale in (1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3):
             x = self.x * scale
@@ -119,11 +116,11 @@ class TestSmoothSVMTopk(unittest.TestCase):
             assert_all_close(res_th, res_py)
 
     def testGradSmoothSVMth_loss(self):
-
-        svm_topk_smooth_th = SmoothTopkSVM(self.n_classes, tau=self.tau, k=self.k)
-        for scale in (1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3, 1e4):
-            x = self.x * scale
-            x = Variable(x, requires_grad=True)
-            assert gradcheck(lambda x: svm_topk_smooth_th(x, V(self.y)),
-                             (x,), atol=1e-2, rtol=1e-3, eps=max(1e-4 * scale, 1e-2)), \
-                "failed with scale {}".format(scale)
+        for k in range(2, self.k + 1):
+            svm_topk_smooth_th = SmoothTopkSVM(self.n_classes, tau=self.tau, k=k)
+            for scale in (1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3, 1e4):
+                x = self.x * scale
+                x = Variable(x, requires_grad=True)
+                assert gradcheck(lambda x: svm_topk_smooth_th(x, V(self.y)),
+                                (x,), atol=1e-2, rtol=1e-3, eps=max(1e-4 * scale, 1e-2)), \
+                    "failed with scale={}, k={}".format(scale, k)

@@ -50,8 +50,16 @@ def d_logS_d_expX(S, X, j, p, grad, thresh, eps=1e-5):
     # recursion of gradient formula (separate terms for stability)
     _N_, _P_ = recursion(_S_, _X_, j)
 
-    # detect instability: small relative difference in log-space
+    # deal with edge case where _N_ or _P_ is 0 instead of a LogTensor (happens for k=2):
+    # fill with large negative values (numerically equivalent to 0 in log-space)
+    if not isinstance(_N_, LogTensor):
+        _N_ = LogTensor(-1.0 / eps * torch.ones_like(X))
+    if not isinstance(_P_, LogTensor):
+        _P_ = LogTensor(-1.0 / eps * torch.ones_like(X))
+
     P, N = _P_.torch(), _N_.torch()
+
+    # detect instability: small relative difference in log-space
     diff = (P - N) / (N.abs() + eps)
 
     # split into stable and unstable indices
