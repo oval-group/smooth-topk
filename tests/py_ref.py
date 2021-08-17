@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.misc as sp
+import scipy.special as sp
 import itertools
 
 from utils import to_numpy
