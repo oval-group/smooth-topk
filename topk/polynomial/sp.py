@@ -21,26 +21,24 @@ class LogSumExp(nn.Module):
         self.buffers = (self.grad_km1, self.grad_k)
 
     def forward(self, x):
-        f = LogSumExp_F(self.k, self.p, self.thresh, self.mul, self.buffers)
-        return f(x)
+        f = LogSumExp_F()
+        return f.apply(x, self.k, self.p, self.thresh, self.mul, self.buffers)
 
 
-class LogSumExp_F(ag.Function):
-    def __init__(self, k, p, thresh, mul, buffers):
-        self.k = k
-        self.p = p
-        self.mul = mul
-        self.thresh = thresh
-
-        # unpack buffers
-        self.grad_km1, self.grad_k = buffers
-
-    def forward(self, x):
+class LogSumExp_F(ag.Function):        
+    
+    @staticmethod
+    def forward(self, x, k, p, thresh, mul, buffers):
         """
         Returns a matrix of size (2, n_samples) with sigma_{k-1} and sigma_{k}
         for each sample of the mini-batch.
         """
         self.save_for_backward(x)
+
+        self.k, self.p, self.thresh = k, p, thresh
+
+        # unpack buffers
+        self.grad_km1, self.grad_k = buffers
 
         # number of samples and number of coefficients to compute
         n_s = x.size(0)
@@ -61,7 +59,7 @@ class LogSumExp_F(ag.Function):
         x = [x, x.clone().fill_(0)]
 
         # polynomial multiplications
-        log_res = divide_and_conquer(x, kp, mul=self.mul)
+        log_res = divide_and_conquer(x, kp, mul=mul)
 
         # re-normalize
         coeff = log_res + x_summed[None, :]
@@ -74,6 +72,7 @@ class LogSumExp_F(ag.Function):
 
         return coeff[self.k - 1: self.k + 1]
 
+    @staticmethod
     def backward(self, grad_sk):
         """
         Compute backward pass of LogSumExp.
@@ -95,7 +94,7 @@ class LogSumExp_F(ag.Function):
         # chain rule: combine with incoming gradients (broadcast to all classes on third dim)
         grad_x = grad_sk[0, :, None] * self.grad_km1 + grad_sk[1, :, None] * self.grad_k
 
-        return grad_x
+        return grad_x, None, None, None, None, None
 
 
 def log_sum_exp(x):
